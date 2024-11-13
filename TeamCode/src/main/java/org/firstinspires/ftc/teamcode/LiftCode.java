@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(group = "drive")
-public class TestClass extends LinearOpMode {
+@Autonomous(name = "LiftCode",group = "robot")
+public class LiftCode extends LinearOpMode {
     //public DcMotor arm = null;
     private CRServo intake = null;
     private Servo claw = null;
@@ -23,14 +23,14 @@ public class TestClass extends LinearOpMode {
 
         // Position of the arm when it's lifted
         int armUpPosition = 1270;
-        int slideoutPosition = 600;
+        int slideoutPosition = 950;
 
         // Position of the arm when it's down
         int armDownPosition = 0;
-        int slideinPosition = 20;
+        int slideinPosition = 5;
 
         int wristUpPosition = 0;
-        int wristDownPosition = 200;
+        int wristDownPosition = 350;
 
         // Find a motor in the hardware map named "Arm Motor"
         DcMotor armMotor = hardwareMap.dcMotor.get("arm");
@@ -59,6 +59,56 @@ public class TestClass extends LinearOpMode {
 
         sleep(2050);
 
+        slideMotor.setTargetPosition(slideoutPosition);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setPower(1);
+
+        // Get the current position of the armMotor
+        double position = slideMotor.getCurrentPosition();
+
+
+        // Show the position of the armMotor on telemetry
+        telemetry.addData("Encoder Position", position);
+        telemetry.update();
+
+        sleep(4000);
+        armMotor.setTargetPosition(3000);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.5);
+
+        sleep(5000);
+
+        wristMotor.setTargetPosition(wristDownPosition);
+        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wristMotor.setPower(.5);
+
+        sleep(6000);
+        wristMotor.setTargetPosition(wristUpPosition);
+        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wristMotor.setPower(.5);
+
+        sleep(4000);
+
+        armMotor.setTargetPosition(armUpPosition);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.8);
+
+        sleep(2050);
+
+        slideMotor.setTargetPosition(slideinPosition);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setPower(1);
+
+        // Show the position of the armMotor on telemetry
+        telemetry.addData("Encoder Position", position);
+        telemetry.update();
+
+        sleep(5000);
+
+        armMotor.setTargetPosition(armDownPosition);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.8);
+        /*
         slideMotor.setTargetPosition(slideoutPosition);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setPower(1);
@@ -126,7 +176,7 @@ public class TestClass extends LinearOpMode {
 
         telemetry.update();
 
-        sleep(2000);
+        sleep(2000);*/
 
         /*Trajectory traj = drive.trajectoryBuilder(new Pose2d())
                 .splineTo(new Vector2d(30, 30), 0)
