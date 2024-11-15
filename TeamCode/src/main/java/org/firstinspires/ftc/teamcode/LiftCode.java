@@ -52,37 +52,44 @@ public class LiftCode extends LinearOpMode {
 
 
         if (isStopRequested()) return;
-
+        //Lift Arm parallel to floor
         armMotor.setTargetPosition(armUpPosition);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(0.8);
 
         sleep(2050);
 
+        //Slide out slide fully
         slideMotor.setTargetPosition(slideoutPosition);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setPower(1);
 
+        sleep(4000);
         // Get the current position of the armMotor
-        double position = slideMotor.getCurrentPosition();
+        //double position = slideMotor.getCurrentPosition();
 
 
         // Show the position of the armMotor on telemetry
-        telemetry.addData("Encoder Position", position);
-        telemetry.update();
+        //telemetry.addData("Encoder Position", position);
+        //telemetry.update();
 
-        sleep(4000);
+        //Lift Arm fully up
         armMotor.setTargetPosition(3000);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(0.5);
 
         sleep(5000);
 
+        //Bend Wrist Down
         wristMotor.setTargetPosition(wristDownPosition);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setPower(.5);
 
         sleep(6000);
+
+
+
+        //next
         wristMotor.setTargetPosition(wristUpPosition);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setPower(.5);
@@ -100,8 +107,8 @@ public class LiftCode extends LinearOpMode {
         slideMotor.setPower(1);
 
         // Show the position of the armMotor on telemetry
-        telemetry.addData("Encoder Position", position);
-        telemetry.update();
+        //telemetry.addData("Encoder Position", position);
+        //telemetry.update();
 
         sleep(5000);
 
