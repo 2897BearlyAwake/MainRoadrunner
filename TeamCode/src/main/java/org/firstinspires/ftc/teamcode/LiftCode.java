@@ -27,10 +27,10 @@ public class LiftCode extends LinearOpMode {
 
         // Position of the arm when it's down
         int armDownPosition = 0;
-        int slideinPosition = 5;
+        int slideinPosition = 3;
 
         int wristUpPosition = 0;
-        int wristDownPosition = 350;
+        int wristDownPosition = 400;
 
         // Find a motor in the hardware map named "Arm Motor"
         DcMotor armMotor = hardwareMap.dcMotor.get("arm");
@@ -87,7 +87,9 @@ public class LiftCode extends LinearOpMode {
 
         sleep(6000);
 
-
+        intake.setPower(-1);
+        sleep(3000);
+        intake.setPower(0);
 
         //next
         wristMotor.setTargetPosition(wristUpPosition);
