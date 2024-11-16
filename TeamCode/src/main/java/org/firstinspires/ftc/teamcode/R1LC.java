@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name = "LiftCode",group = "robot")
-public class LiftCode extends LinearOpMode {
+@Autonomous(name = "R1LC",group = "robot")
+public class R1LC extends LinearOpMode {
     //public DcMotor arm = null;
     private CRServo intake = null;
     private Servo claw = null;
@@ -20,6 +20,7 @@ public class LiftCode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        int armDrivePosition = 200;
 
         // Position of the arm when it's lifted
         int armUpPosition = 1270;
@@ -53,6 +54,28 @@ public class LiftCode extends LinearOpMode {
 
 
         if (isStopRequested()) return;
+
+        Pose2d startPose = new Pose2d(-24, -66, Math.toRadians(90));
+        drive.setPoseEstimate(startPose);
+
+
+        armMotor.setTargetPosition(armDrivePosition);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(1);
+
+        sleep(1000);
+
+        Trajectory traj1 = drive.trajectoryBuilder(startPose)
+                .forward(12)
+                .build();
+        drive.followTrajectory(traj1);
+
+
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end(),true)
+                .lineToLinearHeading(new Pose2d(-39, -49, Math.toRadians(225)))
+                .build();
+        drive.followTrajectory(traj2);
+
         //Lift Arm parallel to floor
         armMotor.setTargetPosition(armUpPosition);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -81,13 +104,10 @@ public class LiftCode extends LinearOpMode {
 
         sleep(2000);
 
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(180));
-        drive.setPoseEstimate(startPose);
-
-        Trajectory traj1 = drive.trajectoryBuilder(startPose)
+        Trajectory trajdf = drive.trajectoryBuilder(traj2.end(),true)
                 .forward(21)
                 .build();
-        drive.followTrajectory(traj1);
+        drive.followTrajectory(trajdf);
 
         //Bend Wrist Down
         wristMotor.setTargetPosition(wristDownPosition);
@@ -107,10 +127,10 @@ public class LiftCode extends LinearOpMode {
 
         sleep(2000);
 
-        Trajectory traj2 = drive.trajectoryBuilder(traj1.end(),true)
+        Trajectory trajdb = drive.trajectoryBuilder(trajdf.end(),true)
                 .forward(-21)
                 .build();
-        drive.followTrajectory(traj2);
+        drive.followTrajectory(trajdb);
 
         armMotor.setTargetPosition(armUpPosition+50);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -128,9 +148,15 @@ public class LiftCode extends LinearOpMode {
 
         sleep(4000);
 
+        Trajectory trajfin = drive.trajectoryBuilder(trajdb.end(),true)
+                .lineToLinearHeading(new Pose2d(-24, -66, Math.toRadians(90)))
+                .build();
+        drive.followTrajectory(trajfin);
+
         armMotor.setTargetPosition(armDownPosition);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(0.8);
+
         /*
         slideMotor.setTargetPosition(slideoutPosition);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -216,3 +242,4 @@ public class LiftCode extends LinearOpMode {
         );*/
     }
 }
+
