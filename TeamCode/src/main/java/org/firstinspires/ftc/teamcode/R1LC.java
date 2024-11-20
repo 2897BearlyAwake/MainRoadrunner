@@ -105,7 +105,7 @@ public class R1LC extends LinearOpMode {
         sleep(2000);
 
         Trajectory trajdf = drive.trajectoryBuilder(traj2.end(),true)
-                .forward(21)
+                .forward(21.5)
                 .build();
         drive.followTrajectory(trajdf);
 
@@ -132,6 +132,11 @@ public class R1LC extends LinearOpMode {
                 .build();
         drive.followTrajectory(trajdb);
 
+        Trajectory trajfat = drive.trajectoryBuilder(trajdb.end(),true)
+                .lineToLinearHeading(new Pose2d(-36, -50, Math.toRadians(-225)))
+                .build();
+        drive.followTrajectory(trajfat);
+
         armMotor.setTargetPosition(armUpPosition+50);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(0.8);
@@ -148,8 +153,8 @@ public class R1LC extends LinearOpMode {
 
         sleep(4000);
 
-        Trajectory trajfin = drive.trajectoryBuilder(trajdb.end(),true)
-                .lineToLinearHeading(new Pose2d(-24, -66, Math.toRadians(90)))
+        Trajectory trajfin = drive.trajectoryBuilder(trajfat.end(),true)
+                .lineToLinearHeading(new Pose2d(-40, -30, Math.toRadians(-225)))
                 .build();
         drive.followTrajectory(trajfin);
 
