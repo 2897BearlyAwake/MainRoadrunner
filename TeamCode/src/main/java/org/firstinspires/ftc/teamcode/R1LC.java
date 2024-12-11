@@ -13,66 +13,71 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name = "R1LC",group = "robot")
 public class R1LC extends LinearOpMode {
-    //public DcMotor arm = null;
+
+    //Declare Arms, Wrist and Slide Motors
+    private DcMotor armMotor = null;
+    private DcMotor slideMotor = null;
+    private DcMotor wristMotor = null;
+
+    //Declare intake and claw servos
     private CRServo intake = null;
     private Servo claw = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        // Setup Hardware Profile
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        int armDrivePosition = 200;
-
-        // Position of the arm when it's lifted
-        int armUpPosition = 1270;
-        int slideoutPosition = 950;
-
-        // Position of the arm when it's down
-        int armDownPosition = 0;
-        int slideinPosition = -3;
-
-        int wristUpPosition = 0;
-        int wristDownPosition = 380;
-
-        int armAllUpPosition = 3000;
-        // Find a motor in the hardware map named "Arm Motor"
-        DcMotor armMotor = hardwareMap.dcMotor.get("arm");
-        DcMotor slideMotor = hardwareMap.dcMotor.get("slide");
-        DcMotor wristMotor = hardwareMap.dcMotor.get("wrist");
+        armMotor = hardwareMap.dcMotor.get("arm");
+        slideMotor = hardwareMap.dcMotor.get("slide");
+        wristMotor = hardwareMap.dcMotor.get("wrist");
         intake = hardwareMap.get(CRServo.class, "intake");
         claw = hardwareMap.get(Servo.class, "claw");
+
+        // Constants Involved in ArmMotor
+        int armDrivePosition = 200;
+        int armUpPosition = 1270;
+        int armDownPosition = 0;
+        int armAllUpPosition = 3000;
+
+        // Linear Slide Constants
+        int slideoutPosition = 950;
+        int slideinPosition = -3;
+
+        // Wrist Constants
+        int wristUpPosition = 0;
+        int wristDownPosition = 350;
 
         // Reset the motor encoder so that it reads zero ticks
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        // Sets the starting position of the arm to the down position
-//        armMotor.setTargetPosition(armDownPosition);
-//        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        wristMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        wristMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
-
 
         if (isStopRequested()) return;
 
+        // Initial pose for Red Side Position 1
         Pose2d startPose = new Pose2d(-24, -66, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
-
+        // Raise Arm To Height Required to Drive
         armMotor.setTargetPosition(armDrivePosition);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(1);
-
         sleep(1000);
 
+        // Push forward away from the wall
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
                 .forward(12)
                 .build();
         drive.followTrajectory(traj1);
 
-
+        // Drive to position facing the net zone
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end(),true)
-                .lineToLinearHeading(new Pose2d(-39, -49, Math.toRadians(225)))
+                .lineToLinearHeading(new Pose2d(-40, -49, Math.toRadians(225)))
                 .build();
         drive.followTrajectory(traj2);
 
@@ -80,32 +85,23 @@ public class R1LC extends LinearOpMode {
         armMotor.setTargetPosition(armUpPosition);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(1);
-
         sleep(1000);
 
         //Slide out slide fully
         slideMotor.setTargetPosition(slideoutPosition);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setPower(1);
-
         sleep(3000);
-        // Get the current position of the armMotor
-        //double position = slideMotor.getCurrentPosition();
-
-
-        // Show the position of the armMotor on telemetry
-        //telemetry.addData("Encoder Position", position);
-        //telemetry.update();
 
         //Lift Arm fully up
         armMotor.setTargetPosition(armAllUpPosition);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(1);
-
         sleep(2000);
 
+        // Slide forward to net zone
         Trajectory trajdf = drive.trajectoryBuilder(traj2.end(),true)
-                .forward(21.5)
+                .forward(24)
                 .build();
         drive.followTrajectory(trajdf);
 
@@ -113,138 +109,49 @@ public class R1LC extends LinearOpMode {
         wristMotor.setTargetPosition(wristDownPosition);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setPower(.8);
-
         sleep(3000);
 
+        // Eject Sample
         intake.setPower(-1);
         sleep(2000);
         intake.setPower(0);
 
-        //next
+        //Retract Wrist
         wristMotor.setTargetPosition(wristUpPosition);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setPower(.8);
-
         sleep(2000);
 
+        //Slide back from net zone
         Trajectory trajdb = drive.trajectoryBuilder(trajdf.end(),true)
-                .forward(-21)
+                .forward(-24)
                 .build();
         drive.followTrajectory(trajdb);
 
-        Trajectory trajfat = drive.trajectoryBuilder(trajdb.end(),true)
-                .lineToLinearHeading(new Pose2d(-36, -50, Math.toRadians(-225)))
-                .build();
-        drive.followTrajectory(trajfat);
-
+        //Lower Arm
         armMotor.setTargetPosition(armUpPosition+50);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(0.8);
-
         sleep(2050);
 
+        //Bring in slide
         slideMotor.setTargetPosition(slideinPosition);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setPower(1);
-
-        // Show the position of the armMotor on telemetry
-        //telemetry.addData("Encoder Position", position);
-        //telemetry.update();
-
         sleep(4000);
 
-        Trajectory trajfin = drive.trajectoryBuilder(trajfat.end(),true)
-                .lineToLinearHeading(new Pose2d(-40, -30, Math.toRadians(-225)))
+        //Bring Down Arm
+        armMotor.setTargetPosition(armDownPosition);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.8);
+
+        //Slide to Ending Position
+        Trajectory trajfin = drive.trajectoryBuilder(trajdb.end(),true)
+                .lineToLinearHeading(new Pose2d(-36, -48, Math.toRadians(-225)))
                 .build();
         drive.followTrajectory(trajfin);
 
-        armMotor.setTargetPosition(armDownPosition);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.8);
 
-        /*
-        slideMotor.setTargetPosition(slideoutPosition);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setPower(1);
-
-        sleep(4000);
-
-        wristMotor.setTargetPosition(wristDownPosition);
-        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        wristMotor.setPower(.8);
-
-        sleep(3000);
-        intake.setPower(0.5);
-        sleep(3000);
-
-        intake.setPower(0);
-
-        wristMotor.setTargetPosition(wristUpPosition);
-        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        wristMotor.setPower(.5);
-
-        sleep(2000);
-        claw.setPosition(0.55);
-        claw.setPosition(1);
-
-        slideMotor.setTargetPosition(slideinPosition);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setPower(1);
-
-        sleep(5000);
-
-        slideMotor.setPower(0);
-
-        // Get the current position of the armMotor
-        double position = armMotor.getCurrentPosition();
-
-        // Get the target position of the armMotor
-        double desiredPosition = armMotor.getTargetPosition();
-
-        // Show the position of the armMotor on telemetry
-        telemetry.addData("Encoder Position", position);
-
-        // Show the target position of the armMotor on telemetry
-        telemetry.addData("Desired Position", desiredPosition);
-
-        telemetry.update();
-
-        sleep(1000);
-        //sleepy
-
-        armMotor.setTargetPosition(armDownPosition);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.8);
-
-        // Get the current position of the armMotor
-        position = armMotor.getCurrentPosition();
-
-        // Get the target position of the armMotor
-        desiredPosition = armMotor.getTargetPosition();
-
-        // Show the position of the armMotor on telemetry
-        telemetry.addData("Encoder Position", position);
-
-        // Show the target position of the armMotor on telemetry
-        telemetry.addData("Desired Position", desiredPosition);
-
-        telemetry.update();
-
-        sleep(2000);*/
-
-        /*Trajectory traj = drive.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(30, 30), 0)
-                .build();
-
-        drive.followTrajectory(traj);
-
-        sleep(2000);
-
-        drive.followTrajectory(
-                drive.trajectoryBuilder(traj.end(), true)
-                        .splineTo(new Vector2d(0, 0), Math.toRadians(180))
-                        .build()
-        );*/
     }
 }
 
