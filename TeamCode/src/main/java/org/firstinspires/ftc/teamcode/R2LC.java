@@ -35,17 +35,18 @@ public class R2LC extends LinearOpMode {
         // Constants Involved in ArmMotor
         int armDrivePosition = 200;
         int armUpPosition = 1270;
-        int armToBar = 1680;
+        int armToBar = 2450;
         int armDownPosition = 0;
         int armAllUpPosition = 3000;
 
-        // Linear Slide Constants
-        int slideoutPosition = 300;
-        int slideinPosition = -3;
+        // Linear Slide Constants (prob don't need)
+        //int slideoutPosition = 300;
+        //int slideinPosition = -3;
 
         // Wrist Constants
         int wristUpPosition = 0;
         int wristDownPosition = 400;
+        int wristGroundIntakePosition = 300;
 
         // Claw Positions
         double clawClosed = 1;
@@ -89,26 +90,26 @@ public class R2LC extends LinearOpMode {
                 .build();
         drive.followTrajectory(traj2);
 
-        //Lift Arm below the Bar
+        //Lift Arm Above the Bar
         armMotor.setTargetPosition(armToBar);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(1);
         sleep(1000);
 
         //Extend arm
-        slideMotor.setTargetPosition(slideoutPosition);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setPower(1);
-        sleep(1000);
+//        slideMotor.setTargetPosition(slideoutPosition);
+//        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        slideMotor.setPower(1);
+//        sleep(1000);
 
         // Roll closer to the submursible
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end(),true)
-                .forward(14.5)
+                .forward(9)
                 .build();
         drive.followTrajectory(traj3);
 
         //Hook Sample on Bar
-        armMotor.setTargetPosition(armToBar + 800);
+        armMotor.setTargetPosition(armToBar + -780);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setPower(1);
         sleep(1000);
@@ -128,16 +129,50 @@ public class R2LC extends LinearOpMode {
         armMotor.setPower(1);
         sleep(1000);
 
-        //Slide to Ending Position
-        Trajectory trajfin = drive.trajectoryBuilder(traj4.end(),true)
-                .lineToLinearHeading(new Pose2d(36, -48, Math.toRadians(45)))
+        Trajectory traj5 = drive.trajectoryBuilder(traj4.end(),true)
+                .lineToLinearHeading(new Pose2d(32, -48, Math.toRadians(90)))
                 .build();
-        drive.followTrajectory(trajfin);
+        drive.followTrajectory(traj5);
 
-        //Bring Down Arm
-        armMotor.setTargetPosition(armDownPosition);
+        //Slide to position in front of sample on ground
+        Trajectory traj6 = drive.trajectoryBuilder(traj5.end(),true)
+                .lineToLinearHeading(new Pose2d(31.5, -36, Math.toRadians(21)))
+                .build();
+        drive.followTrajectory(traj6);
+
+        //Bring Down Arm (trying to see if this code is needed or if it just conflicts)
+       // armMotor.setTargetPosition(armDownPosition);
+        //armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //armMotor.setPower(0.8);
+
+        //Bend Wrist Down
+        wristMotor.setTargetPosition(wristGroundIntakePosition);
+        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wristMotor.setPower(.8);
+        sleep(3000);
+
+//        //Slide forward a little closer to the sample to intake it
+//        Trajectory traj6 = drive.trajectoryBuilder(traj5.end(),true)
+//                .lineToLinearHeading(new Pose2d(33, -48, Math.toRadians(30)))
+//                .build();
+//        drive.followTrajectory(traj6);
+
+        // Intake Sample
+        intake.setPower(1);
+        sleep(2000);
+        intake.setPower(0);
+
+        //Retract Wrist
+        wristMotor.setTargetPosition(wristUpPosition);
+        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wristMotor.setPower(.8);
+        sleep(2000);
+
+        // Lift arm into the drive position
+        armMotor.setTargetPosition(armDrivePosition);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setPower(0.8);
+        armMotor.setPower(1);
+        sleep(1000);
     }
 }
 

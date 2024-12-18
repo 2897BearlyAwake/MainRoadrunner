@@ -58,7 +58,7 @@ public class Drive1 extends LinearOpMode {
 
         // Claw Positions
         double clawClosed = 1;
-        double clawOpen = 0.55;
+        //double clawOpen = 0.55;
 
         boolean Extension = false;
 
@@ -68,6 +68,15 @@ public class Drive1 extends LinearOpMode {
 
         // Wrist down to floor
         boolean wristDown = false;
+
+        // Claw Positions
+        double CLAW_OPEN_POSITION = 0.30;
+        double CLAW_CLOSED_POSITION = 1;
+
+        // Claw toggle state
+        boolean clawOpen = false;
+        boolean lastBump = false;
+
 
         waitForStart();
 
@@ -191,6 +200,17 @@ public class Drive1 extends LinearOpMode {
                 armMotor.setPower(1);
                 sleep(1000);
             }
+
+            // Toggle claw position when right_bumper is pressed
+            if (gamepad1.right_bumper && !lastBump) {
+                clawOpen = !clawOpen;
+                if (clawOpen) {
+                    claw.setPosition(CLAW_OPEN_POSITION);
+                } else {
+                    claw.setPosition(CLAW_CLOSED_POSITION);
+                }
+            }
+            lastBump = gamepad1.right_bumper;
 
             // Control Intake on Stick 1
             if (gamepad1.left_trigger>0.1){
