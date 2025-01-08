@@ -45,7 +45,7 @@ public class R1LC extends LinearOpMode {
 
         // Wrist Constants
         int wristUpPosition = 0;
-        int wristDownPosition = 350;
+        int wristDownPosition = 330;
 
         // Reset the motor encoder so that it reads zero ticks
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -77,7 +77,7 @@ public class R1LC extends LinearOpMode {
 
         // Drive to position facing the net zone
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end(),true)
-                .lineToLinearHeading(new Pose2d(-40, -49, Math.toRadians(225)))
+                .lineToLinearHeading(new Pose2d(-40, -51, Math.toRadians(232)))
                 .build();
         drive.followTrajectory(traj2);
 
@@ -101,7 +101,7 @@ public class R1LC extends LinearOpMode {
 
         // Slide forward to net zone
         Trajectory trajdf = drive.trajectoryBuilder(traj2.end(),true)
-                .forward(24)
+                .forward(22)
                 .build();
         drive.followTrajectory(trajdf);
 

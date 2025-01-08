@@ -136,7 +136,7 @@ public class R2LC extends LinearOpMode {
 
         //Slide to position in front of sample on ground
         Trajectory traj6 = drive.trajectoryBuilder(traj5.end(),true)
-                .lineToLinearHeading(new Pose2d(31.5, -36, Math.toRadians(21)))
+                .lineToLinearHeading(new Pose2d(31.5, -34.5, Math.toRadians(20)))
                 .build();
         drive.followTrajectory(traj6);
 
@@ -158,7 +158,7 @@ public class R2LC extends LinearOpMode {
 //        drive.followTrajectory(traj6);
 
         // Intake Sample
-        intake.setPower(1);
+        intake.setPower(0.6);
         sleep(2000);
         intake.setPower(0);
 
